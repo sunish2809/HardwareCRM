@@ -1,4 +1,3 @@
-// src/pages/CustomerDetails.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../utils/api";
@@ -37,8 +36,8 @@ const CustomerDetails = () => {
             <ul className="list-disc ml-5 mb-2">
               {latest.items.map((item, i) => (
                 <li key={i}>
-                  {item.product} - {item.quantityLabel} - {item.boxes} box(es) x
-                  ₹{item.pricePerBox}
+                  {item.productName} - {item.quantityLabel} - {item.boxes}{" "}
+                  box(es) x ₹{item.pricePerBox}
                 </li>
               ))}
             </ul>
@@ -65,8 +64,8 @@ const CustomerDetails = () => {
               <ul className="list-disc ml-5">
                 {bill.items.map((item, i) => (
                   <li key={i}>
-                    {item.product} - {item.quantityLabel} - {item.boxes} x ₹
-                    {item.pricePerBox}
+                    {item.productName} - {item.quantityLabel} - {item.boxes}{" "}
+                    box(es) x ₹{item.pricePerBox}
                   </li>
                 ))}
               </ul>

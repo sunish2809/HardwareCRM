@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../utils/api";
 
 const ManageProducts = () => {
+  const token = localStorage.getItem("token");
   const [productName, setProductName] = useState("");
   const [quantities, setQuantities] = useState([
     { quantityLabel: "", stock: "" },
@@ -30,7 +31,11 @@ const ManageProducts = () => {
     };
 
     try {
-      await api.post("/products", payload);
+      await api.post("/products", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setMessage("Product added successfully");
       setProductName("");
       setQuantities([{ quantityLabel: "", stock: "" }]);
