@@ -22,10 +22,12 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-100">
       <div className="bg-white p-6 rounded-xl shadow-xl w-[90%] sm:w-96">
+        <h1 className="text-3xl font-bold text-center text-blue-900 mb-2">
+          Sadhna Sales
+        </h1>
         <h2 className="text-2xl font-bold mb-4 text-center text-blue-800">
           Login
         </h2>
-
         {error && (
           <div className="text-red-500 text-sm mb-3 text-center">{error}</div>
         )}
