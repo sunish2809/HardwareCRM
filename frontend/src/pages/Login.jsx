@@ -5,18 +5,23 @@ import { useAuth } from "../context/AuthContext";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const isValid = login({ username, password });
+    setLoading(true);
+    setError("");
+    
+    const isValid = await login({ username, password });
     if (isValid) {
       navigate("/home");
     } else {
       setError("Invalid username or password");
     }
+    setLoading(false);
   };
 
   return (
@@ -49,9 +54,10 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full bg-blue-700 text-white py-2 rounded-md hover:bg-blue-800"
+            disabled={loading}
+            className="w-full bg-blue-700 text-white py-2 rounded-md hover:bg-blue-800 disabled:bg-blue-400 disabled:cursor-not-allowed"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
