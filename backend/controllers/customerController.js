@@ -1,4 +1,4 @@
-const Customer = require('../models/Customer');
+const Customer = require("../models/Customer");
 
 exports.createBill = async (req, res) => {
   const { name, phone, items, totalAmount, paidAmount } = req.body;
@@ -16,14 +16,48 @@ exports.createBill = async (req, res) => {
   }
 
   await customer.save();
-  res.json({ message: 'Bill recorded', customer });
+  res.json({ message: "Bill recorded", customer });
 };
 
 exports.getCustomer = async (req, res) => {
   const { phone } = req.params;
   const customer = await Customer.findOne({ phone });
-  if (!customer) return res.status(404).json({ error: 'Customer not found' });
+  if (!customer) return res.status(404).json({ error: "Customer not found" });
 
   const latestBill = customer.bills[customer.bills.length - 1];
   res.json({ customer, latestBill });
+};
+
+exports.getAllCustomers = async (req, res) => {
+  const { page = 1, limit = 10, search = "" } = req.query;
+
+  const query = {
+    $or: [
+      { name: new RegExp(search, "i") },
+      { phone: new RegExp(search, "i") },
+    ],
+  };
+
+  const customers = await Customer.find(query)
+    .skip((page - 1) * limit)
+    .limit(Number(limit));
+
+  const total = await Customer.countDocuments(query);
+
+  const customersWithStatus = customers.map((c) => {
+    const latest = c.bills[c.bills.length - 1];
+    const status = latest?.dueAmount > 0 ? "Due" : "Paid";
+    return {
+      name: c.name,
+      phone: c.phone,
+      status,
+    };
+  });
+
+  res.json({
+    data: customersWithStatus,
+    total,
+    page: Number(page),
+    pages: Math.ceil(total / limit),
+  });
 };
