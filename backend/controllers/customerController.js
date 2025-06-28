@@ -2,11 +2,19 @@ const Customer = require("../models/Customer");
 
 exports.createBill = async (req, res) => {
   const { name, phone, items, totalAmount, paidAmount } = req.body;
-  const dueAmount = totalAmount - paidAmount;
 
+  const billItems = items.map((item) => ({
+    productId: item.productId,
+    productName: item.productName,
+    quantityLabel: item.quantityLabel,
+    boxes: item.boxes,
+    pricePerBox: item.pricePerBox,
+  }));
+
+  const dueAmount = totalAmount - paidAmount;
   let customer = await Customer.findOne({ phone });
 
-  const bill = { items, totalAmount, paidAmount, dueAmount };
+  const bill = { items: billItems, totalAmount, paidAmount, dueAmount };
 
   if (!customer) {
     customer = new Customer({ name, phone, bills: [bill] });

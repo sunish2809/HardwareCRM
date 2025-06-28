@@ -1,24 +1,24 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const billSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   items: [
     {
-      product: String,
+      productName: String,
       quantityLabel: String,
       boxes: Number,
       pricePerBox: Number,
-    }
+    },
   ],
   totalAmount: Number,
   paidAmount: Number,
-  dueAmount: Number
+  dueAmount: Number,
 });
 
 const customerSchema = new mongoose.Schema({
   name: String,
   phone: String,
-  bills: [billSchema]
+  bills: [billSchema],
 });
 
-module.exports = mongoose.model('Customer', customerSchema);
+module.exports = mongoose.model("Customer", customerSchema);

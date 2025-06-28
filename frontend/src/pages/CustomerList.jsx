@@ -1,24 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-// Mock customer data
-const mockCustomers = Array.from({ length: 27 }).map((_, i) => ({
-  name: `Customer ${i + 1}`,
-  phone: `99900000${i}`,
-  status: i % 3 === 0 ? "Due" : "Paid",
-}));
+import api from "../utils/api";
 
 const CustomerList = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [customers, setCustomers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+
   const perPage = 10;
 
-  const filtered = mockCustomers.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const fetchCustomers = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get(`/customers`, {
+        params: {
+          page,
+          limit: perPage,
+          search,
+        },
+      });
 
-  const totalPages = Math.ceil(filtered.length / perPage);
-  const currentCustomers = filtered.slice((page - 1) * perPage, page * perPage);
+      setCustomers(res.data.data);
+      setTotalPages(res.data.pages);
+    } catch (err) {
+      console.error("Failed to fetch customers", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [page, search]);
 
   return (
     <div className="p-4">
@@ -26,29 +41,38 @@ const CustomerList = () => {
 
       <input
         type="text"
-        placeholder="Search by name..."
+        placeholder="Search by name or phone..."
         className="w-full border px-3 py-2 mb-4"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1);
+        }}
       />
 
-      <div className="bg-white rounded shadow overflow-hidden">
-        {currentCustomers.map((cust) => (
-          <Link
-            key={cust.phone}
-            to={`/customer/${cust.phone}`}
-            className="px-4 py-2 border-b hover:bg-gray-100 flex justify-between"
-          >
-            <span>{cust.name}</span>
-            <span
-              className={
-                cust.status === "Due" ? "text-red-600" : "text-green-600"
-              }
+      <div className="bg-white rounded shadow overflow-hidden min-h-[200px]">
+        {loading ? (
+          <p className="text-center py-4">Loading...</p>
+        ) : customers.length === 0 ? (
+          <p className="text-center py-4">No customers found.</p>
+        ) : (
+          customers.map((cust) => (
+            <Link
+              key={cust.phone}
+              to={`/customer/${cust.phone}`}
+              className="px-4 py-2 border-b hover:bg-gray-100 flex justify-between"
             >
-              {cust.status}
-            </span>
-          </Link>
-        ))}
+              <span>{cust.name}</span>
+              <span
+                className={
+                  cust.status === "Due" ? "text-red-600" : "text-green-600"
+                }
+              >
+                {cust.status}
+              </span>
+            </Link>
+          ))
+        )}
       </div>
 
       {/* Pagination */}
