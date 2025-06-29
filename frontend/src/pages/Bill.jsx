@@ -72,6 +72,7 @@ const Bill = () => {
         phone: customer.phone,
         totalAmount: total,
         paidAmount: customer.paidAmount,
+        tax: parseFloat(tax || 0),
         items: items.map((item) => {
           const product = products.find((p) => p._id === item.productId);
           return {
@@ -82,6 +83,7 @@ const Bill = () => {
       };
 
       await api.post("/customers/bill", payload);
+      console.log("payload", payload);
 
       await api.put("/products/update-stock", {
         updates: items.map((item) => ({
@@ -95,6 +97,7 @@ const Bill = () => {
       setErrorMsg("");
       setCustomer({ name: "", phone: "", paidAmount: "" });
       setItems([]);
+      setTax(0);
     } catch (err) {
       console.error("Failed to create bill or update stock:", err);
       setErrorMsg("Failed to create bill ❌");

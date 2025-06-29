@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://hardware-crm.vercel.app/api",
+   baseURL: "https://hardware-crm.vercel.app/api",
 });
 
 api.interceptors.request.use((config) => {

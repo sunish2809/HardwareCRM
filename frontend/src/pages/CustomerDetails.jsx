@@ -69,6 +69,7 @@ const CustomerDetails = () => {
           item.quantityLabel,
           item.boxes,
           item.pricePerBox,
+          bill.tax || 0,
           bill.totalAmount,
           bill.paidAmount,
           bill.dueAmount,
@@ -85,11 +86,13 @@ const CustomerDetails = () => {
           "Quantity",
           "Boxes",
           "Price/Box",
+          "Tax",
           "Total",
           "Paid",
           "Due",
         ],
       ],
+
       body: rows,
       startY: 45,
     });
@@ -99,6 +102,7 @@ const CustomerDetails = () => {
 
   if (!customer)
     return <p className="text-center mt-8">Loading customer details...</p>;
+  console.log(customer);
 
   const { name, bills } = customer.customer;
   const latest = customer.latestBill;
@@ -121,6 +125,7 @@ const CustomerDetails = () => {
                 </li>
               ))}
             </ul>
+            <p>Tax: ₹{latest.tax || 0}</p>
             <p>Total: ₹{latest.totalAmount}</p>
             <p>Paid: ₹{latest.paidAmount}</p>
             <p className="text-red-600">Due: ₹{latest.dueAmount}</p>
@@ -182,7 +187,8 @@ const CustomerDetails = () => {
                 ))}
               </ul>
               <p>
-                Total: ₹{bill.totalAmount} | Paid: ₹{bill.paidAmount} |{" "}
+                Tax: ₹{bill.tax || 0} | Total: ₹{bill.totalAmount} | Paid: ₹
+                {bill.paidAmount} |
                 <span className="text-red-600">Due: ₹{bill.dueAmount}</span>
               </p>
             </div>
