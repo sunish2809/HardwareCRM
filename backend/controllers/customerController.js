@@ -1,7 +1,7 @@
 const Customer = require("../models/Customer");
 
 exports.createBill = async (req, res) => {
-  const { name, phone, items, totalAmount, paidAmount } = req.body;
+  const { name, phone, items, totalAmount, paidAmount, tax } = req.body;
 
   const billItems = items.map((item) => ({
     productId: item.productId,
@@ -14,7 +14,13 @@ exports.createBill = async (req, res) => {
   const dueAmount = totalAmount - paidAmount;
   let customer = await Customer.findOne({ phone });
 
-  const bill = { items: billItems, totalAmount, paidAmount, dueAmount };
+  const bill = {
+    items: billItems,
+    totalAmount,
+    paidAmount,
+    dueAmount,
+    tax: parseFloat(tax || 0), // ✅ include tax
+  };
 
   if (!customer) {
     customer = new Customer({ name, phone, bills: [bill] });
@@ -33,6 +39,7 @@ exports.getCustomer = async (req, res) => {
   if (!customer) return res.status(404).json({ error: "Customer not found" });
 
   const latestBill = customer.bills[customer.bills.length - 1];
+  console.log("latest", latestBill);
   res.json({ customer, latestBill });
 };
 

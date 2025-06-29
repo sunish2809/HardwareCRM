@@ -13,6 +13,7 @@ const billSchema = new mongoose.Schema({
   totalAmount: Number,
   paidAmount: Number,
   dueAmount: Number,
+  tax: Number,
 });
 
 const customerSchema = new mongoose.Schema({
