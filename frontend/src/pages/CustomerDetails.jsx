@@ -3,20 +3,47 @@ import { useParams } from "react-router-dom";
 import api from "../utils/api";
 
 const CustomerDetails = () => {
+  const token = localStorage.getItem("token");
   const { phone } = useParams();
   const [customer, setCustomer] = useState(null);
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const fetchCustomer = async () => {
+    try {
+      const res = await api.get(`/customers/${phone}`);
+      setCustomer(res.data);
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchCustomer = async () => {
-      try {
-        const res = await api.get(`/customers/${phone}`);
-        setCustomer(res.data);
-      } catch (error) {
-        console.error("Error fetching customer:", error);
-      }
-    };
     fetchCustomer();
   }, [phone]);
+
+  const handlePayDue = async () => {
+    try {
+      await api.put(
+        `/customers/pay-due/${phone}`,
+        { amount: parseFloat(paymentAmount) },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setSuccessMsg("Payment updated successfully ✅");
+      setErrorMsg("");
+      setPaymentAmount("");
+      fetchCustomer(); // refresh customer data
+    } catch (error) {
+      console.error("Error updating due:", error);
+      setErrorMsg("Failed to update payment ❌");
+      setSuccessMsg("");
+    }
+  };
 
   if (!customer)
     return <p className="text-center mt-8">Loading customer details...</p>;
@@ -29,6 +56,7 @@ const CustomerDetails = () => {
       <h2 className="text-xl font-bold mb-2 text-center">Customer: {name}</h2>
       <p className="text-center mb-4 text-gray-600">Phone: {phone}</p>
 
+      {/* Latest Bill Section */}
       <div className="bg-white p-4 rounded shadow mb-6">
         <h3 className="font-semibold mb-2">Latest Bill</h3>
         {latest && (
@@ -51,6 +79,31 @@ const CustomerDetails = () => {
         )}
       </div>
 
+      {/* Pay Due Section */}
+      <div className="bg-white p-4 rounded shadow mb-6">
+        <h3 className="font-semibold mb-2 text-lg">Pay Remaining Due</h3>
+
+        {successMsg && <p className="text-green-600 mb-2">{successMsg}</p>}
+        {errorMsg && <p className="text-red-600 mb-2">{errorMsg}</p>}
+
+        <input
+          type="number"
+          placeholder="Amount to pay"
+          value={paymentAmount}
+          onChange={(e) => setPaymentAmount(e.target.value)}
+          className="w-full border px-3 py-2 mb-3"
+        />
+
+        <button
+          onClick={handlePayDue}
+          disabled={!paymentAmount}
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-60"
+        >
+          Pay Due
+        </button>
+      </div>
+
+      {/* All Bills Section */}
       <div className="bg-white p-4 rounded shadow">
         <h3 className="font-semibold mb-2">All Bills</h3>
         {bills

@@ -11,6 +11,7 @@ const Bill = () => {
   });
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [tax, setTax] = useState();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -49,9 +50,10 @@ const Bill = () => {
     return parseInt(item.boxes || 0) > stock;
   });
 
-  const total = items.reduce((sum, item) => {
+  const subtotal = items.reduce((sum, item) => {
     return sum + parseFloat(item.pricePerBox || 0) * parseInt(item.boxes || 0);
   }, 0);
+  const total = subtotal - parseFloat(tax || 0);
 
   const handleSubmitBill = async () => {
     const hasStockIssue = items.some((item) => {
@@ -197,6 +199,13 @@ const Bill = () => {
           value={customer.phone}
           onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
           className="w-full border px-3 py-2 mb-2"
+        />
+        <input
+          type="number"
+          placeholder="Tax (₹)"
+          value={tax}
+          onChange={(e) => setTax(e.target.value)}
+          className="w-full border px-3 py-2 mb-4"
         />
         <input
           type="number"
