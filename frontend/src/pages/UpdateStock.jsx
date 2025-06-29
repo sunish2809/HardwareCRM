@@ -44,9 +44,15 @@ const UpdateStock = () => {
 
   const handleUpdateStock = async () => {
     try {
-      await api.put(`/products/${selectedProductId}/update-stock`, {
-        quantities,
-      });
+      await api.put(
+        `/products/${selectedProductId}/update-stock`,
+        { quantities },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       alert("Stock updated successfully!");
     } catch (err) {
       console.error("Error updating stock:", err);

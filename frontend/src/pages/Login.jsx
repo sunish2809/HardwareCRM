@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
+
     const isValid = await login({ username, password });
     if (isValid) {
       navigate("/home");
@@ -30,9 +30,6 @@ const Login = () => {
         <h1 className="text-3xl font-bold text-center text-blue-900 mb-2">
           Sadhna Sales
         </h1>
-        <h2 className="text-2xl font-bold mb-4 text-center text-blue-800">
-          Login
-        </h2>
         {error && (
           <div className="text-red-500 text-sm mb-3 text-center">{error}</div>
         )}
