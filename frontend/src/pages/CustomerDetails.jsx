@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../utils/api";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const CustomerDetails = () => {
   const token = localStorage.getItem("token");
@@ -45,6 +47,56 @@ const CustomerDetails = () => {
     }
   };
 
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+
+    const { name, phone } = customer.customer;
+    const bills = customer.customer.bills;
+
+    doc.setFontSize(16);
+    doc.text("Customer Bill Report", 14, 20);
+    doc.setFontSize(12);
+    doc.text(`Name: ${name}`, 14, 30);
+    doc.text(`Phone: ${phone}`, 14, 38);
+
+    const rows = [];
+
+    bills.forEach((bill) => {
+      bill.items.forEach((item) => {
+        rows.push([
+          new Date(bill.date).toLocaleDateString(),
+          item.productName,
+          item.quantityLabel,
+          item.boxes,
+          item.pricePerBox,
+          bill.totalAmount,
+          bill.paidAmount,
+          bill.dueAmount,
+        ]);
+      });
+    });
+
+    // Register autoTable to doc
+    autoTable(doc, {
+      head: [
+        [
+          "Date",
+          "Product",
+          "Quantity",
+          "Boxes",
+          "Price/Box",
+          "Total",
+          "Paid",
+          "Due",
+        ],
+      ],
+      body: rows,
+      startY: 45,
+    });
+
+    doc.save(`${name}_bill_report.pdf`);
+  };
+
   if (!customer)
     return <p className="text-center mt-8">Loading customer details...</p>;
 
@@ -78,6 +130,13 @@ const CustomerDetails = () => {
           </div>
         )}
       </div>
+
+      <button
+        onClick={handleDownloadPDF}
+        className="mt-3 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+      >
+        Download PDF
+      </button>
 
       {/* Pay Due Section */}
       <div className="bg-white p-4 rounded shadow mb-6">
