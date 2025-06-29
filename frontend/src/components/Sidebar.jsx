@@ -21,6 +21,7 @@ const Sidebar = ({ children }) => {
     { path: "/customers", label: "Customers" },
     { path: "/change-password", label: "Change Password" },
     { path: "/manage-products", label: "Manage Products" },
+    { path: "/update-stock", label: "Update Stock" },
   ];
 
   return (

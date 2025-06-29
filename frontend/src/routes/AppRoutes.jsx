@@ -14,6 +14,7 @@ import CustomerDetails from "../pages/CustomerDetails";
 import Sidebar from "../components/Sidebar";
 import CustomerList from "../pages/CustomerList";
 import ManageProducts from "../pages/ManageProducts";
+import UpdateStock from "../pages/UpdateStock";
 const ProtectedRoute = ({ children }) => {
   const { token } = useAuth();
   return token ? <Sidebar>{children}</Sidebar> : <Navigate to="/" replace />;
@@ -82,6 +83,15 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <CustomerDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/update-stock"
+          element={
+            <ProtectedRoute>
+              <UpdateStock />
             </ProtectedRoute>
           }
         />
