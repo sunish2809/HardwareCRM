@@ -69,3 +69,25 @@ exports.getAllCustomers = async (req, res) => {
     pages: Math.ceil(total / limit),
   });
 };
+
+// controller
+exports.payDue = async (req, res) => {
+  const { phone } = req.params;
+  const { amount } = req.body;
+
+  if (!amount || amount <= 0)
+    return res.status(400).json({ error: "Invalid payment amount" });
+
+  const customer = await Customer.findOne({ phone });
+  if (!customer) return res.status(404).json({ error: "Customer not found" });
+
+  const latestBill = customer.bills[customer.bills.length - 1];
+  if (!latestBill) return res.status(400).json({ error: "No bills found" });
+
+  latestBill.paidAmount += amount;
+  latestBill.dueAmount -= amount;
+
+  await customer.save();
+
+  res.json({ message: "Payment recorded", customer });
+};
