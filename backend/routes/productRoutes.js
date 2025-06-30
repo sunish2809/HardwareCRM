@@ -14,6 +14,6 @@ router.post("/", auth, addProduct);
 
 router.put("/update-stock", auth, updateStock);
 
-router.put("/products/:id/update-stock", auth, updateStockManually);
+router.put("/:id/update-stock", auth, updateStockManually);
 
 module.exports = router;

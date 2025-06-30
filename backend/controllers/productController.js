@@ -75,34 +75,28 @@ exports.updateStock = async (req, res) => {
 exports.updateStockManually = async (req, res) => {
   try {
     const { id } = req.params;
-    const { quantityLabel, stock } = req.body;
+    const { quantities } = req.body;
 
-    if (!quantityLabel || stock == null) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!Array.isArray(quantities)) {
+      return res.status(400).json({ error: "Quantities must be an array" });
     }
 
     const product = await Product.findById(id);
-    if (!product) return res.status(404).json({ error: "Product not found" });
-
-    const quantity = product.quantities.find(
-      (q) => q.quantityLabel === quantityLabel
-    );
-
-    if (quantity) {
-      // Update existing quantity's stock
-      quantity.stock = stock;
-    } else {
-      // Add new quantity type
-      product.quantities.push({ quantityLabel, stock });
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
 
+    // Replace the existing quantities with the new array
+    product.quantities = quantities;
+
+    // Mark the array as modified for Mongoose
+    product.markModified("quantities");
+
     await product.save();
-    res.json({ message: "Stock updated", product });
+
+    res.json({ message: "Stock updated successfully", product });
   } catch (err) {
     console.error("Stock update error:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
-
-
-

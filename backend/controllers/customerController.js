@@ -39,7 +39,6 @@ exports.getCustomer = async (req, res) => {
   if (!customer) return res.status(404).json({ error: "Customer not found" });
 
   const latestBill = customer.bills[customer.bills.length - 1];
-  console.log("latest", latestBill);
   res.json({ customer, latestBill });
 };
 
