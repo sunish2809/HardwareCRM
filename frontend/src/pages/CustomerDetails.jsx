@@ -49,7 +49,6 @@ const CustomerDetails = () => {
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-
     const { name, phone } = customer.customer;
     const bills = customer.customer.bills;
 
@@ -62,22 +61,40 @@ const CustomerDetails = () => {
     const rows = [];
 
     bills.forEach((bill) => {
+      const date = new Date(bill.date).toLocaleDateString();
+      const tax = bill.tax || 0;
+      const totalAfterTax = bill.totalAmount || 0;
+      const totalBeforeTax = tax + totalAfterTax;
+
       bill.items.forEach((item) => {
         rows.push([
-          new Date(bill.date).toLocaleDateString(),
+          date,
           item.productName,
           item.quantityLabel,
           item.boxes,
           item.pricePerBox,
-          bill.tax || 0,
-          bill.totalAmount,
-          bill.paidAmount,
-          bill.dueAmount,
+          "", // Total Before Tax
+          "", // Tax
+          "", // Total After Tax
+          "", // Paid
+          "", // Due
         ]);
       });
+
+      rows.push([
+        "",
+        "",
+        "",
+        "",
+        "Subtotal →",
+        totalBeforeTax,
+        tax,
+        totalAfterTax,
+        bill.paidAmount || 0,
+        bill.dueAmount || 0,
+      ]);
     });
 
-    // Register autoTable to doc
     autoTable(doc, {
       head: [
         [
@@ -86,13 +103,13 @@ const CustomerDetails = () => {
           "Quantity",
           "Boxes",
           "Price/Box",
+          "Total Before Tax",
           "Tax",
-          "Total",
+          "Total After Tax",
           "Paid",
           "Due",
         ],
       ],
-
       body: rows,
       startY: 45,
     });
@@ -125,8 +142,11 @@ const CustomerDetails = () => {
                 </li>
               ))}
             </ul>
+            <p>
+              Total Before Tax: ₹{(latest.tax || 0) + (latest.totalAmount || 0)}
+            </p>
             <p>Tax: ₹{latest.tax || 0}</p>
-            <p>Total: ₹{latest.totalAmount}</p>
+            <p>Total After Tax: ₹{latest.totalAmount}</p>
             <p>Paid: ₹{latest.paidAmount}</p>
             <p className="text-red-600">Due: ₹{latest.dueAmount}</p>
             <p className="text-sm text-gray-500">

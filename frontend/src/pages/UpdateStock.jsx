@@ -7,16 +7,18 @@ const UpdateStock = () => {
   const [quantities, setQuantities] = useState([]);
   const [newQuantityLabel, setNewQuantityLabel] = useState("");
   const [newStock, setNewStock] = useState("");
+  const token = localStorage.getItem("token");
+
+  const fetchProducts = async () => {
+    try {
+      const res = await api.get("/products");
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await api.get("/products");
-        setProducts(res.data);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      }
-    };
     fetchProducts();
   }, []);
 
@@ -27,17 +29,25 @@ const UpdateStock = () => {
   };
 
   const handleQuantityChange = (index, field, value) => {
-    const updated = [...quantities];
-    updated[index][field] = value;
+    const updated = quantities.map((q, i) => {
+      if (i === index) {
+        return { ...q, [field]: value };
+      }
+      return q;
+    });
     setQuantities(updated);
   };
 
   const handleAddQuantity = () => {
     if (!newQuantityLabel.trim() || !newStock) return;
-    setQuantities([
+    const updatedQuantities = [
       ...quantities,
-      { quantityLabel: newQuantityLabel.trim(), stock: parseInt(newStock) },
-    ]);
+      {
+        quantityLabel: newQuantityLabel.trim(),
+        stock: parseInt(newStock),
+      },
+    ];
+    setQuantities(updatedQuantities);
     setNewQuantityLabel("");
     setNewStock("");
   };
@@ -46,13 +56,20 @@ const UpdateStock = () => {
     try {
       await api.put(
         `/products/${selectedProductId}/update-stock`,
-        { quantities },
+        {
+          quantities,
+        },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
+
+      // Reset form and refetch products
+      setSelectedProductId("");
+      setQuantities([]);
+      await fetchProducts();
       alert("Stock updated successfully!");
     } catch (err) {
       console.error("Error updating stock:", err);
