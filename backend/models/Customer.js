@@ -22,4 +22,10 @@ const customerSchema = new mongoose.Schema({
   bills: [billSchema],
 });
 
+customerSchema.virtual('id').get(function() {
+  return this._id.toHexString();
+});
+
+customerSchema.set('toJSON', { virtuals: true });
+
 module.exports = mongoose.model("Customer", customerSchema);
