@@ -83,7 +83,6 @@ const Bill = () => {
       };
 
       await api.post("/customers/bill", payload);
-      console.log("payload", payload);
 
       await api.put("/products/update-stock", {
         updates: items.map((item) => ({

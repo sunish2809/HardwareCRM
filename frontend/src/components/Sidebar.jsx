@@ -19,6 +19,7 @@ const Sidebar = ({ children }) => {
     { path: "/home", label: "Home" },
     { path: "/bill", label: "Bill" },
     { path: "/customers", label: "Customers" },
+    { path: "/tax", label: "Tax" },
     { path: "/change-password", label: "Change Password" },
     { path: "/manage-products", label: "Manage Products" },
     { path: "/update-stock", label: "Update Stock" },

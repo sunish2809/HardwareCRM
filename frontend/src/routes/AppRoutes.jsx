@@ -15,6 +15,9 @@ import Sidebar from "../components/Sidebar";
 import CustomerList from "../pages/CustomerList";
 import ManageProducts from "../pages/ManageProducts";
 import UpdateStock from "../pages/UpdateStock";
+import Tax from "../pages/Tax";
+import CustomerTaxDetails from "../pages/CustomerTaxDetails";
+
 const ProtectedRoute = ({ children }) => {
   const { token } = useAuth();
   return token ? <Sidebar>{children}</Sidebar> : <Navigate to="/" replace />;
@@ -92,6 +95,23 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <UpdateStock />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tax"
+          element={
+            <ProtectedRoute>
+              <Tax />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tax/:customerId"
+          element={
+            <ProtectedRoute>
+              <CustomerTaxDetails />
             </ProtectedRoute>
           }
         />
